@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - main
+    - main
 
 jobs:
   build-and-push:
@@ -33,3 +33,13 @@ jobs:
         docker push ritaaprikian/nlw.service.passin:${{ steps.generate_sha.outputs.sha }}
         docker tag ritaaprikian/nlw.service.passin:${{ steps.generate_sha.outputs.sha }} ritaaprikian/nlw.service.passin:latest
         docker push ritaaprikian/nlw.service.passin:latest
+
+    - name: Update image tag
+      uses: fjogeleit/yaml-update-action@main
+      with:
+        branch: main
+        valueFile: 'deploy/values.yaml'
+        propertyPath: 'image.tag'
+        value: ${{ steps.generate_sha.outputs.sha }}
+        commitChange: true
+        message: "new: Updated tag in values helm"
